@@ -33,18 +33,18 @@ public class XmlDOM {
             
             //inicializamos la variable que vamos a ir modificando manualmente para
             //indicar al sistema qué vamos a querer realizar.
-            int var1= 0;
+            int var1= 2;
             if (var1== 0){
             //procedimiento que muestra todo el documento
                 recorrerRamaDom(documento);
                 
                 }else if (var1==1){
                 //procedimiento que muestra los datos de un alumno en concreto
-                 //  recorrerRamaDomSecuencial(documento, "74857485F");
+                   recorrerRamaDomSecuencial(documento, "74857485F");
                     
                     }else if(var1==2){
                     //procedimiento que modifica un DNI
-                       //  modificarDNI(documento, "50187884S", "74857485F");
+                         modificarDNI(documento, "50187884S", "74857485F");
             }
         }catch(Exception e){
             e.printStackTrace();
@@ -68,4 +68,96 @@ public class XmlDOM {
              }
         }
  }
+    public static void recorrerRamaDomSecuencial(Document miDocumento, String dni){
+    try {
+        boolean encontrado= false;
+        //Generamos una lista que contenga todos los nodos cuyo nombre es DNI
+            NodeList list = miDocumento.getElementsByTagName("dni");
+        int i=0;
+        //recorremos la lista para buscar el DNI
+        while(i<list.getLength()) {
+                     Node n = list.item(i);
+                 //evaluamos si el nodo actual de la lista su valor es el dni
+                if (n.getFirstChild().getNodeValue().equals(dni)){
+                          //nos posicionamos en el nodo padre, que es el nodo alumno
+                        Node Padre= n.getParentNode();
+                        /*llamamos al procedimiento que muestra por pantalla todos los
+                       nodos hijos junto a sus valores*/
+                        recorrerRamaDom(Padre);
+                        //ponemos la variable de control a verdadero
+                        encontrado = true;
+                break;
+                }
+                  i++;
+                  }
+                if (encontrado==false){
+                    System.out.println("DNI no se encuentra como alumno");
+            }
+        } catch (Exception e) {
+                e.printStackTrace();
+        }
+ }
+
+public static void modificarDNI(Document miDocumento, String dni, String dniNuevo){
+ try {
+        boolean encontrado= false;
+        //Generamos una lista que contenga todos los nodos cuyo nombre es DNI
+        NodeList list = miDocumento.getElementsByTagName("dni");
+        int i=0;
+        //recorremos la lista para buscar el DNI
+        while(i<list.getLength()) {
+        Node n = list.item(i);
+        //evaluamos si el nodo actual de la lista su valor es el dni
+        if (n.getFirstChild().getNodeValue().equals(dni)){
+        //modificamos el valor del primer hijo, que es el tecto donde se
+
+        n.getFirstChild().setNodeValue(dniNuevo);
+
+        //nos posicionamos en el nodo padre, que es el nodo alumno
+        Node Padre= n.getParentNode();
+        /*llamamos al procedimiento que muestra por pantalla todos los
+       nodos hijos junto a sus valores para comprobar que se ha cambiado el DNI*/
+        recorrerRamaDom(Padre);
+        //ponemos la variable de control a verdadero
+        encontrado = true;
+        guardarDOMcomoFILE(miDocumento);
+ break;    
+  }
+                i++;
+         }
+                if (encontrado==false){
+                    System.out.println("DNI no se encuentra como alumno");
+                         }
+            } catch (Exception e) {
+                e.printStackTrace();
+        }
+ }
+  
+    
+  public static void guardarDOMcomoFILE(Document doc){
+        try{
+
+             // Crea un fichero llamado salida.xml
+            File archivo_xml = new File("alumnos.xml");
+            // Especifica el formato de salida
+            OutputFormat format = new OutputFormat(doc);
+
+            // Especifica que la salida esté indentada
+            format.setIndenting(true);
+
+            // Escribe el contenido en el FILE
+            XMLSerializer serializer = new XMLSerializer(new
+            FileOutputStream(archivo_xml), format);
+ 
+            serializer.serialize(doc);
+
+
+        }
+        catch (Exception e) {
+             e.printStackTrace();
+        }
+ }
+
+  
+    
 }
